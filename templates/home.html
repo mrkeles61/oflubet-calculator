@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <title>Input Form</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Enter Values</h1>
+    <form method="post" action="/">
+        <table>
+            <tr>
+                <td><input type="number" step="any" name="oflu0" placeholder="Oflubet 0" value="{{ request.form.get('oflu0', '') }}"></td>
+                <td><input type="number" step="any" name="oflu1" placeholder="Oflubet 1" value="{{ request.form.get('oflu1', '') }}"></td>
+                <td><input type="number" step="any" name="oflu2" placeholder="Oflubet 2" value="{{ request.form.get('oflu2', '') }}"></td>
+            </tr>
+            <tr>
+                <td><input type="number" step="any" name="sex0" placeholder="Sexbet 0" value="{{ request.form.get('sex0', '') }}"></td>
+                <td><input type="number" step="any" name="sex1" placeholder="Sexbet 1" value="{{ request.form.get('sex1', '') }}"></td>
+                <td><input type="number" step="any" name="sex2" placeholder="Sexbet 2" value="{{ request.form.get('sex2', '') }}"></td>
+            </tr>
+            <tr>
+                <td><input type="number" step="any" name="chad0" placeholder="MaskülenBet 0" value="{{ request.form.get('chad0', '') }}"></td>
+                <td><input type="number" step="any" name="chad1" placeholder="MaskülenBet 1" value="{{ request.form.get('chad1', '') }}"></td>
+                <td><input type="number" step="any" name="chad2" placeholder="MaskülenBet 2" value="{{ request.form.get('chad2', '') }}"></td>
+            </tr>
+        </table>
+        <input type="submit" value="Submit">
+    </form>
+
+    {% if result_table %}
+    <h2>Calculation Result</h2>
+    <table>
+        <tr>
+            <th></th>
+            <th>Oflubet</th>
+            <th>Sexbet</th>
+            <th>MaskülenBet</th>
+        </tr>
+        <tr>
+            <th>Mert</th>
+            <td>{{ result_table[0][0] }}</td>
+            <td>{{ result_table[0][1] }}</td>
+            <td>{{ result_table[0][2] }}</td>
+        </tr>
+        <tr>
+            <th>Keleş</th>
+            <td>{{ result_table[1][0] }}</td>
+            <td>{{ result_table[1][1] }}</td>
+            <td>{{ result_table[1][2] }}</td>
+        </tr>
+        <tr>
+            <th>Ronaldo</th>
+            <td>{{ result_table[2][0] }}</td>
+            <td>{{ result_table[2][1] }}</td>
+            <td>{{ result_table[2][2] }}</td>
+        </tr>
+    </table>
+    {% endif %}
+</body>
+</html>
