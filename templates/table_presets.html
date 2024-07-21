@@ -1,0 +1,89 @@
+{% macro table_var_1(result_table) %}
+<h2>Tablo Hali 1</h2>
+<table>
+    <tr>
+        <th></th>
+        <th>Oflubet</th>
+        <th>Sexbet</th>
+        <th>MaskülenBet</th>
+    </tr>
+    <tr>
+        <th>Mert</th>
+        <td>{{  result_table[1][0] }} (1)</td>
+        <td>{{  result_table[0][1] }} (0)</td>
+        <td>{{  result_table[2][2] }} (2)</td>
+    </tr>
+    <tr>
+        <th>Keleş</th>
+        <td>{{  result_table[2][0] }} (2)</td>
+        <td>{{  result_table[1][1] }} (1)</td>
+        <td>{{  result_table[0][2] }} (0)</td>
+    </tr>
+    <tr>
+        <th>Ronaldo</th>
+        <td>{{  result_table[0][0] }} (0)</td>
+        <td>{{  result_table[2][1] }} (2)</td>
+        <td>{{  result_table[1][2] }} (1)</td>
+    </tr>
+</table>
+{% endmacro %}
+
+{% macro table_var_2(result_table) %}
+<h2>Tablo Hali 2</h2>
+<table>
+    <tr>
+        <th></th>
+        <th>Oflubet</th>
+        <th>Sexbet</th>
+        <th>MaskülenBet</th>
+    </tr>
+    <tr>
+        <th>Mert</th>
+        <td>{{ 4000 * result_table[2][0] }} (2)</td>
+        <td>{{ 4000 * result_table[0][1] }} (0)</td>
+        <td>{{ 4000 * result_table[1][2] }} (1)</td>
+    </tr>
+    <tr>
+        <th>Keleş</th>
+        <td>{{ 3900 * result_table[1][0] }} (1)</td>
+        <td>{{ 3900 * result_table[2][1] }} (2)</td>
+        <td>{{ 3900 * result_table[0][2] }} (0)</td>
+    </tr>
+    <tr>
+        <th>Ronaldo</th>
+        <td>{{ 3800 * result_table[0][0] }} (0)</td>
+        <td>{{ 3800 * result_table[1][1] }} (1)</td>
+        <td>{{ 3800 * result_table[2][2] }} (2)</td>
+    </tr>
+</table>
+{% endmacro %}
+
+{% macro table_var_3(result_table) %}
+<h2>Tablo Hali 3</h2>
+<table>
+    <tr>
+        <th></th>
+        <th>Oflubet</th>
+        <th>Sexbet</th>
+        <th>MaskülenBet</th>
+    </tr>
+    <tr>
+        <th>Mert</th>
+        <td>{{ 4000 * result_table[0][0] }} (0)</td>
+        <td>{{ 4000 * result_table[1][1] }} (1)</td>
+        <td>{{ 4000 * result_table[2][2] }} (2)</td>
+    </tr>
+    <tr>
+        <th>Keleş</th>
+        <td>{{ 3900 * result_table[1][0] }} (1)</td>
+        <td>{{ 3900 * result_table[2][1] }} (2)</td>
+        <td>{{ 3900 * result_table[0][2] }} (0)</td>
+    </tr>
+    <tr>
+        <th>Ronaldo</th>
+        <td>{{ 3800 * result_table[2][0] }} (2)</td>
+        <td>{{ 3800 * result_table[0][1] }} (0)</td>
+        <td>{{ 3800 * result_table[1][2] }} (1)</td>
+    </tr>
+</table>
+{% endmacro %}
