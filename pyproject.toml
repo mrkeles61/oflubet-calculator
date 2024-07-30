@@ -9,6 +9,7 @@ packages = [{include = "repl_nix_oflubet_calculator"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 flask = "^3.0.3"
+flask-session = "^0.8.0"
 
 
 [build-system]
