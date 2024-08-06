@@ -1,5 +1,4 @@
-from flask import Flask, render_template, redirect, request, session
-from flask_session import Session
+from flask import Flask, render_template, request
 import otuzbirmanyagi as AY
 
 app = Flask(__name__)
@@ -21,6 +20,7 @@ maskulenbet_values = []
 # Define inputs_2d globally
 inputs_2d = []
 
+
 def update_entries_with_inputs(entries, inputs_2d, bonus_rates):
     site_names = ["oflu", "sex", "chad"]
 
@@ -38,6 +38,7 @@ def update_entries_with_inputs(entries, inputs_2d, bonus_rates):
 
     return entries
 
+
 def calculate_second_day(iddia_tablosu, kazanan_sonuc):
     for row in iddia_tablosu:
         for entry in row:
@@ -48,15 +49,17 @@ def calculate_second_day(iddia_tablosu, kazanan_sonuc):
                 bonus_orani = entry['bonus_orani']
                 bet_site = int(entry['bet_site'])
 
-                entry['second_day_YT'] = ((yatirilacak_tutar * bonus_orani) / 10) - (cap_num / bet_rate) + 15
+                entry['second_day_YT'] = ((yatirilacak_tutar * bonus_orani) /
+                                          10) - (cap_num / bet_rate) + 15
 
     return iddia_tablosu
 
+
 def update_entries(preset_num, entries):
     if preset_num == 1:
-        entries[0][0]['betted_outcome'] = 1 
-        entries[0][1]['betted_outcome'] = 0 
-        entries[0][2]['betted_outcome'] = 2 
+        entries[0][0]['betted_outcome'] = 1
+        entries[0][1]['betted_outcome'] = 0
+        entries[0][2]['betted_outcome'] = 2
         entries[1][0]['betted_outcome'] = 2
         entries[1][1]['betted_outcome'] = 1
         entries[1][2]['betted_outcome'] = 0
@@ -104,9 +107,11 @@ def update_entries(preset_num, entries):
             elif bet_site == 2:
                 bonus_orani = chad_bonus
 
-            entries[row][col]['yatirilacak_tutar'] = (cap_num * 100) / (bet_rate * (100 + bonus_orani))
+            entries[row][col]['yatirilacak_tutar'] = (cap_num * 100) / (
+                bet_rate * (100 + bonus_orani))
 
     return entries
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -132,29 +137,28 @@ def index():
         }
 
         # Initialize inputs_2d
-        inputs_2d = [
-            [
-                float(request.form.get('oflu0', 0)),
-                float(request.form.get('oflu1', 0)),
-                float(request.form.get('oflu2', 0))
-            ],
-            [
-                float(request.form.get('sex0', 0)),
-                float(request.form.get('sex1', 0)),
-                float(request.form.get('sex2', 0))
-            ],
-            [
-                float(request.form.get('chad0', 0)),
-                float(request.form.get('chad1', 0)),
-                float(request.form.get('chad2', 0))
-            ]
-        ]
+        inputs_2d = [[
+            float(request.form.get('oflu0', 0)),
+            float(request.form.get('oflu1', 0)),
+            float(request.form.get('oflu2', 0))
+        ],
+                     [
+                         float(request.form.get('sex0', 0)),
+                         float(request.form.get('sex1', 0)),
+                         float(request.form.get('sex2', 0))
+                     ],
+                     [
+                         float(request.form.get('chad0', 0)),
+                         float(request.form.get('chad1', 0)),
+                         float(request.form.get('chad2', 0))
+                     ]]
 
         # Update entries with bet rates and bonus rates
         update_entries_with_inputs(entries, inputs_2d, bonus_rates)
 
         # Retrieve table type from form
-        tabletype = request.form.get('table_type', '1')  # Default to table 1 if no type is provided
+        tabletype = request.form.get(
+            'table_type', '1')  # Default to table 1 if no type is provided
 
         # Retrieve winning outcome from form
         winning_outcome = request.form.get('winning_outcome', '')
@@ -166,8 +170,13 @@ def index():
         print(entries)
 
     # Render the template with current values (no default fallback)
-    return render_template('home.html', tabletype=tabletype, preset_num=preset_num, bonus_rates=bonus_rates, inputs=inputs, 
+    return render_template('home.html',
+                           tabletype=tabletype,
+                           preset_num=preset_num,
+                           bonus_rates=bonus_rates,
+                           inputs=inputs,
                            entries=entries)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
