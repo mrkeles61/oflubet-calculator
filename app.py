@@ -1,24 +1,20 @@
 from flask import Flask, render_template, request
-import otuzbirmanyagi as AY
+from otuzbirmanyagi import entries
 
 app = Flask(__name__)
-
-# Configure session storage
-app.config['SESSION_TYPE'] = 'filesystem'
-app.secret_key = 'supersecretkey'
-Session(app)
 
 inputs = {}
 preset_num = None
 bonus_rates = {}
-tabletype = '1'  # Initialize with a default value
-winning_outcome = '1'
+
+winning_outcome= None
 oflubet_values = []
 sexbet_values = []
 maskulenbet_values = []
 
 # Define inputs_2d globally
 inputs_2d = []
+  # Initialize entries globally
 
 
 def update_entries_with_inputs(entries, inputs_2d, bonus_rates):
@@ -36,23 +32,18 @@ def update_entries_with_inputs(entries, inputs_2d, bonus_rates):
             site_name = site_names[site_index]
             entry['bonus_orani'] = bonus_rates.get(site_name, 0)
 
-    return entries
 
-
-def calculate_second_day(iddia_tablosu, kazanan_sonuc):
-    for row in iddia_tablosu:
+def calculate_second_day(entries, winning_outcome):
+    for row in entries:
         for entry in row:
-            if entry['betted_outcome'] == kazanan_sonuc:
+            if entry['betted_outcome'] == (winning_outcome):
                 yatirilacak_tutar = entry['yatirilacak_tutar']
                 bet_rate = entry['bet_Rate']
                 cap_num = entry['cap_number']
                 bonus_orani = entry['bonus_orani']
-                bet_site = int(entry['bet_site'])
 
-                entry['second_day_YT'] = ((yatirilacak_tutar * bonus_orani) /
-                                          10) - (cap_num / bet_rate) + 15
-
-    return iddia_tablosu
+                entry['second_day_YT'] = round((((yatirilacak_tutar * bonus_orani) / 10) - (cap_num / bet_rate) + 15),2)
+                                         
 
 
 def update_entries(preset_num, entries):
@@ -87,6 +78,7 @@ def update_entries(preset_num, entries):
         entries[2][1]['betted_outcome'] = 0
         entries[2][2]['betted_outcome'] = 1
 
+
     oflu_bonus = float(request.form.get('oflubonus', 0))
     sex_bonus = float(request.form.get('sexbonus', 0))
     chad_bonus = float(request.form.get('chadbonus', 0))
@@ -107,10 +99,8 @@ def update_entries(preset_num, entries):
             elif bet_site == 2:
                 bonus_orani = chad_bonus
 
-            entries[row][col]['yatirilacak_tutar'] = (cap_num * 100) / (
-                bet_rate * (100 + bonus_orani))
-
-    return entries
+            yatirilacak_tutar = (cap_num * 100) / (bet_rate * (100 + bonus_orani))
+            entries[row][col]['yatirilacak_tutar']=round(yatirilacak_tutar,2)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -118,14 +108,31 @@ def index():
     global inputs
     global preset_num
     global bonus_rates
-    global tabletype
     global winning_outcome
-    global inputs_2d  # Access the global variable
+    global inputs_2d
+    global entries
 
-    # Retrieve entries from session or use default if not present
-    entries = session.get('entries', AY.entries)
+    inputs = {
+        'oflu1': request.form.get('oflu1', ''),
+        'oflu0': request.form.get('oflu0', ''),
+        'oflu2': request.form.get('oflu2', ''),
+        'sex1': request.form.get('sex1', ''),
+        'sex0': request.form.get('sex0', ''),
+        'sex2': request.form.get('sex2', ''),
+        'chad1': request.form.get('chad1', ''),
+        'chad0': request.form.get('chad0', ''),
+        'chad2': request.form.get('chad2', ''),
+    }
+    bonus_rates = {
+        'oflu': request.form.get('oflubonus', ''),
+        'sex': request.form.get('sexbonus', ''),
+        'chad': request.form.get('chadbonus', '')
+    }
 
     if request.method == "POST":
+        # Debug print to see received form data
+        print("Form Data:", request.form)
+
         # Retrieve preset_num from form
         preset_num = int(request.form.get('table_type', 0))
 
@@ -137,45 +144,51 @@ def index():
         }
 
         # Initialize inputs_2d
-        inputs_2d = [[
-            float(request.form.get('oflu0', 0)),
-            float(request.form.get('oflu1', 0)),
-            float(request.form.get('oflu2', 0))
-        ],
-                     [
-                         float(request.form.get('sex0', 0)),
-                         float(request.form.get('sex1', 0)),
-                         float(request.form.get('sex2', 0))
-                     ],
-                     [
-                         float(request.form.get('chad0', 0)),
-                         float(request.form.get('chad1', 0)),
-                         float(request.form.get('chad2', 0))
-                     ]]
+        inputs_2d = [
+            [
+                float(request.form.get('oflu0', 0)),
+                float(request.form.get('oflu1', 0)),
+                float(request.form.get('oflu2', 0))
+            ],
+            [
+                float(request.form.get('sex0', 0)),
+                float(request.form.get('sex1', 0)),
+                float(request.form.get('sex2', 0))
+            ],
+            [
+                float(request.form.get('chad0', 0)),
+                float(request.form.get('chad1', 0)),
+                float(request.form.get('chad2', 0))
+            ]
+        ]
 
         # Update entries with bet rates and bonus rates
         update_entries_with_inputs(entries, inputs_2d, bonus_rates)
 
-        # Retrieve table type from form
-        tabletype = request.form.get(
-            'table_type', '1')  # Default to table 1 if no type is provided
+        # Retrieve winning outcome from form and debug print
+        winning_outcome_str = request.form.get('winning_outcome', '0')
+        print("Winning Outcome String:", winning_outcome_str)
 
-        # Retrieve winning outcome from form
-        winning_outcome = request.form.get('winning_outcome', '')
+        try:
+            winning_outcome = int(winning_outcome_str)
+        except ValueError:
+            winning_outcome = 0  # Default value if conversion fails
+
+        print("Winning Outcome Integer:", winning_outcome)
 
         # Update entries based on the preset number
-        entries = update_entries(preset_num, entries)
-        entries = calculate_second_day(entries, winning_outcome)
+        update_entries(preset_num, entries)
+        calculate_second_day(entries, winning_outcome)
 
-        print(entries)
+        print("Entries after calculation:", entries)
 
     # Render the template with current values (no default fallback)
     return render_template('home.html',
-                           tabletype=tabletype,
                            preset_num=preset_num,
                            bonus_rates=bonus_rates,
                            inputs=inputs,
-                           entries=entries)
+                           entries=entries,
+                           winning_outcome=winning_outcome)
 
 
 if __name__ == '__main__':
