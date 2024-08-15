@@ -6,7 +6,7 @@ app = Flask(__name__)
 inputs = {}
 preset_num = None
 bonus_rates = {}
-
+match_name='AYIBOĞAN'
 winning_outcome= None
 oflubet_values = []
 sexbet_values = []
@@ -111,6 +111,7 @@ def index():
     global winning_outcome
     global inputs_2d
     global entries
+    global match_name
 
     inputs = {
         'oflu1': request.form.get('oflu1', ''),
@@ -174,13 +175,13 @@ def index():
         except ValueError:
             winning_outcome = 0  # Default value if conversion fails
 
-        print("Winning Outcome Integer:", winning_outcome)
 
         # Update entries based on the preset number
         update_entries(preset_num, entries)
         calculate_second_day(entries, winning_outcome)
+        match_name=request.form.get('match_name', 'default')
 
-        print("Entries after calculation:", entries)
+        print("Match Name:", match_name)  # Debug print to check value
 
     # Render the template with current values (no default fallback)
     return render_template('home.html',
@@ -188,7 +189,8 @@ def index():
                            bonus_rates=bonus_rates,
                            inputs=inputs,
                            entries=entries,
-                           winning_outcome=winning_outcome)
+                           winning_outcome=winning_outcome,
+                           match_name=match_name)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,63 @@
+/* styles.css */
+
+/* General Styles */
+table, th, td {
+    border: 2px solid black; /* Thicker border */
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+/* Rate Inputs Table Styles */
+.rate-inputs-container {
+    max-width: 80%; /* Adjust this value as needed */
+    margin: 0 auto; /* Center the container */
+}
+
+.input-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-box input {
+    margin-bottom: 10px;
+    border: 2px solid black; /* Thicker border */
+    padding: 5px;
+}
+
+/* Table Header Styles */
+.table-header {
+    font-weight: bold;
+    font-family: Arial, sans-serif; /* Adjust font-family as needed */
+    margin-bottom: 10px;
+}
+
+/* Remove the extra border line at the end of the table */
+.table tbody tr:last-child {
+    border-bottom: none; /* Remove extra line */
+}
+
+/* Form Group Styles */
+.form-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.form-group label, .form-group select, .form-group input, .form-group button {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.form-group input[type="text"] {
+    width: 200px; /* Adjust width as needed */
+}
+
+/* Align the submit button with other inputs */
+.btn-primary {
+    margin-left: 10px;
+}
