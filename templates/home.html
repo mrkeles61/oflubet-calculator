@@ -14,33 +14,33 @@
                     <tr>
                         <td>
                             <div class="input-box">
-                                <input type="number" step="any" name="oflu1" placeholder="Oflubet 1" value="{{ inputs.get('oflu1', '') }}">
-                                <input type="number" step="any" name="oflu0" placeholder="Oflubet 0" value="{{ inputs.get('oflu0', '') }}">
+                                <input type="number" step="any" name="oflu1" placeholder="Pari 1" value="{{ inputs.get('oflu1', '') }}">
+                                <input type="number" step="any" name="oflu0" placeholder="Pari 0" value="{{ inputs.get('oflu0', '') }}">
+                                <input type="number" step="any" name="oflu2" placeholder="Pari 2" value="{{ inputs.get('oflu2', '') }}">
+                                <input type="number" step="any" name="oflubonus" placeholder="Pari Bonus oranı" value="{{ bonus_rates.get('oflu', '') }}">
                                 
-                                <input type="number" step="any" name="oflu2" placeholder="Oflubet 2" value="{{ inputs.get('oflu2', '') }}">
-                                <input type="number" step="any" name="oflubonus" placeholder="Oflubet Bonus oranı" value="{{ bonus_rates.get('oflu', '') }}">
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <div class="input-box">
-                                <input type="number" step="any" name="sex1" placeholder="Sexbet 1" value="{{ inputs.get('sex1', '') }}">
-                                <input type="number" step="any" name="sex0" placeholder="Sexbet 0" value="{{ inputs.get('sex0', '') }}">
+                                <input type="number" step="any" name="sex1" placeholder="TR 1" value="{{ inputs.get('sex1', '') }}">
+                                <input type="number" step="any" name="sex0" placeholder="TR 0" value="{{ inputs.get('sex0', '') }}">
+                                <input type="number" step="any" name="sex2" placeholder="TR 2" value="{{ inputs.get('sex2', '') }}">
+                                <input type="number" step="any" name="sexbonus" placeholder="TR Bonus oranı" value="{{ bonus_rates.get('sex', '') }}">
                                 
-                                <input type="number" step="any" name="sex2" placeholder="Sexbet 2" value="{{ inputs.get('sex2', '') }}">
-                                <input type="number" step="any" name="sexbonus" placeholder="Sexbet Bonus oranı" value="{{ bonus_rates.get('sex', '') }}">
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <div class="input-box">
-                                <input type="number" step="any" name="chad1" placeholder="MaskülenBet 1" value="{{ inputs.get('chad1', '') }}">
-                                <input type="number" step="any" name="chad0" placeholder="MaskülenBet 0" value="{{ inputs.get('chad0', '') }}">
+                                <input type="number" step="any" name="chad1" placeholder="Kanyon 1" value="{{ inputs.get('chad1', '') }}">
+                                <input type="number" step="any" name="chad0" placeholder="Kanyon 0" value="{{ inputs.get('chad0', '') }}">
+                                <input type="number" step="any" name="chad2" placeholder="Kanyon 2" value="{{ inputs.get('chad2', '') }}">
+                                <input type="number" step="any" name="chadbonus" placeholder="Kanyon Bonus oranı" value="{{ bonus_rates.get('chad', '') }}">
                                 
-                                <input type="number" step="any" name="chad2" placeholder="MaskülenBet 2" value="{{ inputs.get('chad2', '') }}">
-                                <input type="number" step="any" name="chadbonus" placeholder="Maskülenbet Bonus oranı" value="{{ bonus_rates.get('chad', '') }}">
                             </div>
                         </td>
                     </tr>
@@ -64,12 +64,19 @@
                 <option value="2" {% if winning_outcome == 2 %}selected{% endif %}>2</option>
             </select>
 
+            
+
             <label for="match_name">Match Name:</label>
             <input type="text" id="match_name" name="match_name" placeholder="Enter Match Name" value="{{ match_name }}">
 
-
             <!-- Submit button aligned with other inputs -->
             <button type="submit" class="btn btn-primary">Submit</button>
+            <label for="second_winning_outcome">İkinci Gün Kazanan Sonuç:</label>
+            <select id="second_winning_outcome" name="second_winning_outcome">
+                <option value="0" {% if second_winning_outcome == 0 %}selected{% endif %}>0</option>
+                <option value="1" {% if second_winning_outcome == 1 %}selected{% endif %}>1</option>
+                <option value="2" {% if second_winning_outcome == 2 %}selected{% endif %}>2</option>
+            </select>
         </div>
 
     </form>
@@ -82,10 +89,10 @@
             <table class="table table-striped-columns">
                 <thead>
                     <tr>
-                        <th>{{match_name}}</th>
-                        <th>OFLUBET</th>
-                        <th>SEXBET</th>
-                        <th>MASKÜLENBET</th>
+                        <th>{{ match_name }}</th>
+                        <th>PARİ</th>
+                        <th>TR</th>
+                        <th>KANYON</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -117,9 +124,9 @@
                 <thead>
                     <tr>
                         <th>{{ match_name }}</th>
-                        <th>OFLUBET</th>
-                        <th>SEXBET</th>
-                        <th>MASKÜLENBET</th>
+                        <th>PARİ</th>
+                        <th>TR</th>
+                        <th>KANYON</th>
                     </tr>
                 </thead>
                 <tbody>
