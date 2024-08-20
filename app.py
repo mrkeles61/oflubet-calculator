@@ -1,18 +1,12 @@
 from flask import Flask, render_template, request
-from otuzbirmanyagi import entries
+from erentemplates import entries_template,ilk_yatirma_template,kalan_cevrim_template
 
 app = Flask(__name__)
 
-inputs={}
-preset_num = None
-bonus_rates = {}
-match_name='AYIBOĞAN'
-winning_outcome= None
-second_winning_outcome=0
 
   
 
-def calculate_second_day(entries, winning_outcome,second_winning_outcome):
+def calculate_second_day(entries, winning_outcome):
     for row in range(3):
         for col in range(3):
             entry = entries[row][col]
@@ -25,11 +19,10 @@ def calculate_second_day(entries, winning_outcome,second_winning_outcome):
 
                 entry['second_day_YT'] = round((((yatirilacak_tutar * bonus_orani) / 10) - (cap_num / bet_rate) + 15), 2)
                 entries[row][col]['second_day_YT']=entry['second_day_YT']
-                entries[row][col]['total_winning']+=yatirilacak_tutar*bet_rate
                 
 
 
-def update_entries(preset_num, entries):
+def update_entries(preset_num, entries, rate_inputs,bonus_rates):
     if preset_num == 1:
         entries[0][0]['betted_outcome'] = 1
         entries[0][1]['betted_outcome'] = 0
@@ -62,83 +55,57 @@ def update_entries(preset_num, entries):
         entries[2][2]['betted_outcome'] = 1
 
 
-    oflu_bonus = float(request.form.get('oflubonus', 0))
-    sex_bonus = float(request.form.get('sexbonus', 0))
-    chad_bonus = float(request.form.get('chadbonus', 0))
+
 
     for row in range(3):
         for col in range(3):
             bet_site = int(entries[row][col]['bet_site'])
             betted_outcome = int(entries[row][col]['betted_outcome'])
-
-            if bet_site == 0:  # oflu
-                if betted_outcome == 0:
-                    bet_rate = float(request.form.get('oflu0', 0))
-                    entries[row][col]['bet_Rate']=bet_rate
-                elif betted_outcome == 1:
-                    bet_rate = float(request.form.get('oflu1', 0))
-                    entries[row][col]['bet_Rate']=bet_rate
-                elif betted_outcome == 2:
-                    bet_rate = float(request.form.get('oflu2', 0))
-                    entries[row][col]['bet_Rate']=bet_rate
-            elif bet_site == 1:  # sex
-                if betted_outcome == 0:
-                    bet_rate = float(request.form.get('sex0', 0))
-                    entries[row][col]['bet_Rate']=bet_rate
-                elif betted_outcome == 1:
-                    bet_rate = float(request.form.get('sex1', 0))
-                    entries[row][col]['bet_Rate']=bet_rate
-                elif betted_outcome == 2:
-                    bet_rate = float(request.form.get('sex2', 0))
-                    entries[row][col]['bet_Rate']=bet_rate
-            elif bet_site == 2:  # chad
-                if betted_outcome == 0:
-                    bet_rate = float(request.form.get('chad0', 0))
-                    entries[row][col]['bet_Rate']=bet_rate
-                elif betted_outcome == 1:
-                    bet_rate = float(request.form.get('chad1', 0))
-                    entries[row][col]['bet_Rate']=bet_rate
-                elif betted_outcome == 2:
-                    bet_rate = float(request.form.get('chad2', 0))
-                    entries[row][col]['bet_Rate']=bet_rate
-                    
-            bonus_orani = 0
+            bet_rate=float(rate_inputs[bet_site][betted_outcome])
+            bonus_orani=bonus_rates[bet_site]       
+            
             cap_num = entries[row][col]['cap_number']
-
-            # Assign bonus rate based on bet_site
-            if bet_site == 0:
-                bonus_orani = oflu_bonus
-                entries[row][col]['bonus_orani']=bonus_orani
-
-                
-            elif bet_site == 1:
-                bonus_orani = sex_bonus
-                entries[row][col]['bonus_orani']=bonus_orani
-            elif bet_site == 2:
-                bonus_orani = chad_bonus
-                entries[row][col]['bonus_orani']=bonus_orani
 
             yatirilacak_tutar = (cap_num * 100) / (bet_rate * (100 + bonus_orani))
             entries[row][col]['yatirilacak_tutar']=round(yatirilacak_tutar,2)
-            entries[row][col]['total_winning']-=yatirilacak_tutar
+
+def calculate_total_deposits(entries, ilk_yatirma ,kalan_cevrim):
+    for row in range(3):
+        for col in range(3):
+            bet_site=entries[row][col]['bet_site']
+            yatiran=entries[row][col]['betted_by']
+            yatirilacak_tutar=entries[row][col]['yatirilacak_tutar']
+            cevrim=entries[row][col]['second_day_YT']
+            ilk_yatirma[yatiran][bet_site]+=yatirilacak_tutar
+            kalan_cevrim[yatiran][bet_site]+=cevrim
+
+    
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global inputs
-    global preset_num
-    global bonus_rates
-    global winning_outcome
-    global entries
-    global match_name
-    global second_winning_outcome
+    inputs={}
+    inputs_second={}
+    preset_num = None
+    preset_num_second=None
+    bonus_rates = {}
+    bonus_rates_second={}
+    match_name='AYIBOĞAN'
+    match_name_second='Karlsruhe-Stuttgart'
+    winning_outcome= None
+    winning_outcome_second=None
+    entries=entries_template
+    entries_second=entries_template
+    ilk_yatirma=ilk_yatirma_template
+    kalan_cevrim=ilk_yatirma_template
+
     
 
     
     
 
     if request.method == "POST":
-        
+        #collect first table's inputs in dictionaries so it could be used as placeholder values
         inputs = {
             'oflu1': request.form.get('oflu1', ''),
             'oflu0': request.form.get('oflu0', ''),
@@ -150,6 +117,7 @@ def index():
             'chad0': request.form.get('chad0', ''),
             'chad2': request.form.get('chad2', ''),
         }
+        
         bonus_rates = {
             'oflu': request.form.get('oflubonus', ''),
             'sex': request.form.get('sexbonus', ''),
@@ -157,28 +125,111 @@ def index():
         }
 
 
-        # Retrieve preset_num from form
-        preset_num = int(request.form.get('table_type', 0))        
+        #second table, same process
+        inputs_second = {
+            'pari1': request.form.get('pari1', ''),
+            'pari0': request.form.get('pari0', ''),
+            'pari2': request.form.get('pari2', ''),
+            'tr1': request.form.get('tr1', ''),
+            'tr0': request.form.get('tr0', ''),
+            'tr2': request.form.get('tr2', ''),
+            'kanyon1': request.form.get('kanyon1', ''),
+            'kanyon0': request.form.get('kanyon0', ''),
+            'kanyon2': request.form.get('kanyon2', ''),
+        }
+        
+        bonus_rates_second = {
+            'pari': request.form.get('paribonus', ''),
+            'tr': request.form.get('trbonus', ''),
+            'kanyon': request.form.get('kanyonbonus', '')
+        }
 
-        # Retrieve winning outcome from form and debug print
+        inputs_first = [
+            [request.form.get('oflu0', ''), request.form.get('oflu1', ''), request.form.get('oflu2', '')],
+            [request.form.get('sex0', ''), request.form.get('sex1', ''), request.form.get('sex2', '')],
+            [request.form.get('chad0', ''), request.form.get('chad1', ''), request.form.get('chad2', '')]
+        ]
+
+        inputs_second = [
+            [request.form.get('pari0', ''), request.form.get('pari1', ''), request.form.get('pari2', '')],
+            [request.form.get('tr0', ''), request.form.get('tr1', ''), request.form.get('tr2', '')],
+            [request.form.get('kanyon0', ''), request.form.get('kanyon1', ''), request.form.get('kanyon2', '')]
+        ]
+
+        bonus_rates_first = [
+            request.form.get('oflubonus', ''),
+            request.form.get('sexbonus', ''),
+            request.form.get('chadbonus', '')
+        ]
+
+        bonus_rates_second = [
+            request.form.get('paribonus', ''),
+            request.form.get('trbonus', ''),
+            request.form.get('kanyonbonus', '')
+        ]
+
+
+
+        
+        
+
+        # get both table types from user input
+        preset_num = int(request.form.get('table_type', 0))       
+        preset_num_second=int(request.form.get('table_type_second',0))
+
+        # assign winning outcomes
         winning_outcome = int(request.form.get('winning_outcome', '0'))
-    
-        # Update entries based on the preset number
-        update_entries(preset_num, entries)
-        calculate_second_day(entries, winning_outcome,second_winning_outcome)
-        match_name=request.form.get('match_name', 'default')
+        winning_outcome_second= int(request.form.get('winning_outcome_second', '0'))
 
-        print(entries)
+        #assign both of the match names accordingly
+        match_name=request.form.get('match_name', 'default')
+        match_name_second=request.form.get('match_name_second', 'default')
+    
+        
+        update_entries(preset_num, entries,inputs_first,bonus_rates_first)
+        calculate_second_day(entries, winning_outcome)
+
+        update_entries(preset_num_second, entries_second,inputs_second,bonus_rates_second)
+        calculate_second_day(entries_second, winning_outcome_second)
+
+        calculate_total_deposits(entries,ilk_yatirma,kalan_cevrim)
+        calculate_total_deposits(entries_second,ilk_yatirma,kalan_cevrim)
+        
+
+        
+
+    else:  # If request is GET, reset all variables to their default state
+        inputs={}
+        inputs_second={}
+        preset_num = None
+        preset_num_second=None
+        bonus_rates = {}
+        bonus_rates_second={}
+        match_name='AYIBOĞAN'
+        match_name_second='Karlsruhe-Stuttgart'
+        winning_outcome= None
+        winning_outcome_second=None
+        entries=entries_template
+        entries_second=entries_template
+        ilk_yatirma=ilk_yatirma_template
+        kalan_cevrim=ilk_yatirma_template
 
         
     # Render the template with current values (no default fallback)
     return render_template('home.html',
+                           ilk_yatirma=ilk_yatirma,
+                           kalan_cevrim=kalan_cevrim,
                            preset_num=preset_num,
+                           preset_num_second=preset_num_second,
                            bonus_rates=bonus_rates,
+                           bonus_rates_second=bonus_rates_second,
                            inputs=inputs,
+                           inputs_second=inputs_second,
                            entries=entries,
-                           second_winning_outcome=second_winning_outcome,
+                           entries_second=entries_second,
                            winning_outcome=winning_outcome,
+                           winning_outcome_second=winning_outcome_second,
+                           match_name_second=match_name_second,
                            match_name=match_name)
 
 
