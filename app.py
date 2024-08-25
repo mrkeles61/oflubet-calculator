@@ -19,7 +19,7 @@ def calculate_second_day(entries, winning_outcome):
                 
 
                 entry['second_day_YT'] = round((((yatirilacak_tutar * bonus_orani) / 10) - (cap_num / bet_rate) + 15), 2)
-                entries[row][col]['second_day_YT']=entry['second_day_YT']
+                entries[row][col]['second_day_YT']=round(entry['second_day_YT'],2)
 
 
     
@@ -106,7 +106,7 @@ def index():
     entries_first=entries_template
     entries_second=entries_template_second
     ilk_yatirma=ilk_yatirma_template
-    kalan_cevrim=ilk_yatirma_template
+    kalan_cevrim=kalan_cevrim_template
 
     
 
@@ -192,36 +192,10 @@ def index():
         calculate_second_day(entries_first, winning_outcome)
         calculate_second_day(entries_second,winning_outcome_second)
 
-        
+        calculate_total_deposits(entries_first, ilk_yatirma ,kalan_cevrim)
+        calculate_total_deposits(entries_second, ilk_yatirma ,kalan_cevrim)
 
         
-
-        print(inputs_first,bonus_rates_first,winning_outcome,preset_num)
-
-        print("\n\n")
-
-        print(inputs_second,bonus_rates_second,winning_outcome_second,preset_num_second)
-
-        print("\n\n")
-
-        for row in range(3):
-            for col in range(3):
-                print(entries_first[row][col]['bet_Rate'])
-                print(entries_first[row][col]['bonus_orani'])
-                print(entries_first[row][col]['yatirilacak_tutar'])
-                print(entries_first[row][col]['second_day_YT'])
-                print(winning_outcome)
-                     
-
-        print("\n\n")
-
-        for row in range(3):
-            for col in range(3):
-                print(entries_second[row][col]['bet_Rate'])
-                print(entries_second[row][col]['bonus_orani'])
-                print(entries_second[row][col]['yatirilacak_tutar'])
-                print(entries_second[row][col]['betted_outcome'])
-                print(winning_outcome_second)
         
 
         
